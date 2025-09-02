@@ -1,0 +1,22 @@
+{
+  "$schema": "https://shadcn-vue.vercel.app/schema.json",
+  "style": "default",
+  "typescript": true,
+  "tailwind": {
+    "config": "tailwind.config.js",
+    "css": "assets/css/main.css",
+    "baseColor": "slate"
+  },
+  "framework": "nuxt",
+  "aliases": {
+    "components": "~/components",
+    "utils": "~/lib/utils"
+  },
+  "componentDir": "./components/ui",
+  "composableDir": "./composables",
+  "pluginDir": "./plugins",
+  "utilsDir": "./lib",
+  "force": true,
+  "typescript": true,
+  "jsx": false
+}
