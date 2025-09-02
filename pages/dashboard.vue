@@ -1,156 +1,233 @@
 <template>
   <NuxtLayout name="dashboard">
-    <div class="space-y-6">
-      <!-- Page Header -->
-      <div>
-        <h2 class="text-3xl font-bold tracking-tight">대시보드</h2>
-        <p class="text-muted-foreground">
-          전체적인 비즈니스 현황을 한눈에 확인하세요.
-        </p>
-      </div>
-      
+    <div class="space-y-8 p-8 bg-background min-h-screen">
       <!-- Stats Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card v-for="stat in stats" :key="stat.title">
-          <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle class="text-sm font-medium">{{ stat.title }}</CardTitle>
-            <Icon :name="stat.icon" class="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div class="text-2xl font-bold">{{ stat.value }}</div>
-            <p :class="cn('text-xs', stat.change > 0 ? 'text-green-600' : 'text-red-600')">
-              {{ stat.change > 0 ? '+' : '' }}{{ stat.change }}% 지난 달 대비
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div
+          v-for="stat in stats"
+          :key="stat.title"
+          class="stat-card group cursor-pointer"
+        >
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center space-x-2">
+              <Icon :name="stat.icon" class="h-5 w-5 text-muted-foreground" />
+              <span class="stat-label">{{ stat.title }}</span>
+            </div>
+            <Icon name="trending-up" class="h-4 w-4 text-muted-foreground" />
+          </div>
+
+          <div class="space-y-2">
+            <div class="stat-value">{{ stat.value }}</div>
+            <div class="flex items-center space-x-2">
+              <span
+                :class="
+                  cn('stat-change', stat.change > 0 ? 'positive' : 'negative')
+                "
+              >
+                {{ stat.change > 0 ? "+" : "" }}{{ stat.change }}%
+              </span>
+              <span class="text-xs text-muted-foreground">{{
+                stat.period
+              }}</span>
+            </div>
+            <p class="text-xs text-muted-foreground leading-relaxed">
+              {{ stat.description }}
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
-      
-      <!-- Recent Activity Table -->
-      <Card>
-        <CardHeader>
-          <CardTitle>최근 사용자 활동</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>사용자</TableHead>
-                <TableHead>활동</TableHead>
-                <TableHead>시간</TableHead>
-                <TableHead>상태</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow v-for="activity in recentActivity" :key="activity.id">
-                <TableCell class="font-medium">{{ activity.user }}</TableCell>
-                <TableCell>{{ activity.action }}</TableCell>
-                <TableCell>{{ activity.time }}</TableCell>
-                <TableCell>
-                  <span :class="cn(
-                    'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                    activity.status === '성공' 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-red-100 text-red-800'
-                  )">
-                    {{ activity.status }}
-                  </span>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-      
-      <!-- Chart Placeholder -->
-      <Card>
-        <CardHeader>
-          <CardTitle>매출 추세</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div class="h-64 bg-muted rounded-lg flex items-center justify-center">
-            <div class="text-center">
-              <Icon name="trending-up" class="h-12 w-12 text-muted-foreground mx-auto mb-2" />
-              <p class="text-muted-foreground">차트 라이브러리 연동 필요</p>
-              <p class="text-sm text-muted-foreground">Chart.js 또는 다른 차트 라이브러리를 추가하세요</p>
+
+      <!-- Chart Section -->
+      <Card class="bg-card border border-border">
+        <div class="p-6">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h3 class="text-xl font-semibold text-foreground mb-2">
+                Total Visitors
+              </h3>
+              <p class="text-sm text-muted-foreground">
+                Total for the last 3 months
+              </p>
+            </div>
+            <div class="flex space-x-2">
+              <Button
+                v-for="period in chartPeriods"
+                :key="period.value"
+                :variant="
+                  selectedPeriod === period.value ? 'default' : 'outline'
+                "
+                size="sm"
+                class="text-xs"
+                @click="selectedPeriod = period.value"
+              >
+                {{ period.label }}
+              </Button>
             </div>
           </div>
-        </CardContent>
+
+          <!-- Chart Placeholder with realistic design -->
+          <div
+            class="h-80 bg-background border border-border rounded-lg p-4 relative overflow-hidden"
+          >
+            <!-- Chart Background Grid -->
+            <div class="absolute inset-4 opacity-20">
+              <div class="h-full w-full relative">
+                <!-- Horizontal grid lines -->
+                <div
+                  v-for="i in 6"
+                  :key="i"
+                  class="absolute w-full border-t border-muted"
+                  :style="{ top: `${(i - 1) * 20}%` }"
+                ></div>
+                <!-- Vertical grid lines -->
+                <div
+                  v-for="i in 12"
+                  :key="'v' + i"
+                  class="absolute h-full border-l border-muted"
+                  :style="{ left: `${(i - 1) * 8.33}%` }"
+                ></div>
+              </div>
+            </div>
+
+            <!-- Mock Chart Data Visualization -->
+            <div class="absolute inset-4 flex items-end space-x-1">
+              <!-- Chart bars/areas would go here -->
+              <div
+                v-for="(point, index) in chartData"
+                :key="index"
+                class="flex-1 relative"
+              >
+                <!-- Primary area -->
+                <div
+                  class="bg-gradient-to-t from-blue-500/20 to-blue-500/5 rounded-t-sm border-t-2 border-blue-400"
+                  :style="{ height: `${point.primary}%` }"
+                ></div>
+                <!-- Secondary area -->
+                <div
+                  class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-green-500/20 to-green-500/5 rounded-t-sm border-t-2 border-green-400"
+                  :style="{ height: `${point.secondary}%` }"
+                ></div>
+              </div>
+            </div>
+
+            <!-- Chart X-axis labels -->
+            <div
+              class="absolute bottom-1 left-4 right-4 flex justify-between text-xs text-muted-foreground"
+            >
+              <span v-for="label in xAxisLabels" :key="label">{{ label }}</span>
+            </div>
+
+            <!-- Chart legend -->
+            <div class="absolute top-4 right-4 flex space-x-4">
+              <div class="flex items-center space-x-2">
+                <div class="w-3 h-3 bg-blue-400 rounded-full"></div>
+                <span class="text-xs text-muted-foreground">Desktop</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+                <span class="text-xs text-muted-foreground">Mobile</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </Card>
     </div>
   </NuxtLayout>
 </template>
 
 <script setup lang="ts">
-import { cn } from '~/lib/utils'
+import { cn } from "~/lib/utils";
 
 // SEO
 useHead({
-  title: '대시보드 - Shashboard'
-})
+  title: "대시보드 - Shashboard",
+});
 
-// Sample data
+// Chart period selection
+const selectedPeriod = ref("3months");
+const chartPeriods = [
+  { value: "3months", label: "Last 3 months" },
+  { value: "30days", label: "Last 30 days" },
+  { value: "7days", label: "Last 7 days" },
+];
+
+// Stats data matching the image
 const stats = [
   {
-    title: '총 매출',
-    value: '₩45,231,890',
-    change: 20.1,
-    icon: 'dollar-sign'
+    title: "Total Revenue",
+    value: "$1,250.00",
+    change: 12.5,
+    period: "this month",
+    description: "Trending up this month",
+    icon: "dollar-sign",
   },
   {
-    title: '방문자 수',
-    value: '+2,350',
-    change: 180.1,
-    icon: 'users-2'
+    title: "New Customers",
+    value: "1,234",
+    change: -20,
+    period: "this period",
+    description: "Down 20% this period",
+    icon: "users",
   },
   {
-    title: '새 가입자',
-    value: '+12,234',
-    change: 19.0,
-    icon: 'users'
+    title: "Active Accounts",
+    value: "45,678",
+    change: 12.5,
+    period: "Strong user retention",
+    description: "Engagement exceed targets",
+    icon: "users-2",
   },
   {
-    title: '알림',
-    value: '573',
-    change: -2.0,
-    icon: 'bell'
-  }
-]
+    title: "Growth Rate",
+    value: "4.5%",
+    change: 4.5,
+    period: "Steady performance",
+    description: "Meets growth projections",
+    icon: "trending-up",
+  },
+];
 
-const recentActivity = [
-  {
-    id: 1,
-    user: '김철수',
-    action: '로그인',
-    time: '2분 전',
-    status: '성공'
-  },
-  {
-    id: 2,
-    user: '박영희',
-    action: '프로필 업데이트',
-    time: '10분 전',
-    status: '성공'
-  },
-  {
-    id: 3,
-    user: '이민수',
-    action: '결제 시도',
-    time: '15분 전',
-    status: '실패'
-  },
-  {
-    id: 4,
-    user: '정수진',
-    action: '계정 생성',
-    time: '1시간 전',
-    status: '성공'
-  },
-  {
-    id: 5,
-    user: '최영수',
-    action: '비밀번호 재설정',
-    time: '2시간 전',
-    status: '성공'
-  }
-]
+// Mock chart data for visualization
+const chartData = ref([
+  { primary: 40, secondary: 25 },
+  { primary: 65, secondary: 35 },
+  { primary: 35, secondary: 20 },
+  { primary: 80, secondary: 45 },
+  { primary: 55, secondary: 30 },
+  { primary: 75, secondary: 40 },
+  { primary: 90, secondary: 60 },
+  { primary: 70, secondary: 45 },
+  { primary: 85, secondary: 55 },
+  { primary: 95, secondary: 70 },
+  { primary: 60, secondary: 35 },
+  { primary: 50, secondary: 30 },
+  { primary: 75, secondary: 50 },
+  { primary: 80, secondary: 55 },
+  { primary: 45, secondary: 25 },
+  { primary: 70, secondary: 40 },
+  { primary: 85, secondary: 60 },
+  { primary: 90, secondary: 65 },
+  { primary: 55, secondary: 35 },
+  { primary: 75, secondary: 50 },
+  { primary: 85, secondary: 55 },
+  { primary: 70, secondary: 45 },
+  { primary: 80, secondary: 50 },
+  { primary: 65, secondary: 40 },
+]);
+
+// X-axis labels for the chart
+const xAxisLabels = [
+  "Jun 1",
+  "Jun 3",
+  "Jun 5",
+  "Jun 7",
+  "Jun 9",
+  "Jun 12",
+  "Jun 15",
+  "Jun 18",
+  "Jun 21",
+  "Jun 24",
+  "Jun 27",
+  "Jun 30",
+];
 </script>

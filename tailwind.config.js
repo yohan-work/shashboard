@@ -1,17 +1,17 @@
-const animate = require("tailwindcss-animate")
+const animate = require("tailwindcss-animate");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: ["class"],
+  darkMode: "class",
   content: [
-    './pages/**/*.{vue,js,ts}',
-    './layouts/**/*.vue',
-    './components/**/*.{vue,js,ts}',
-    './composables/**/*.{js,ts}',
-    './plugins/**/*.{js,ts}',
-    './app.{js,ts,vue}',
-    './error.{js,ts,vue}',
-    './nuxt.config.{js,ts}'
+    "./pages/**/*.{vue,js,ts}",
+    "./layouts/**/*.vue",
+    "./components/**/*.{vue,js,ts}",
+    "./composables/**/*.{js,ts}",
+    "./plugins/**/*.{js,ts}",
+    "./app.{js,ts,vue}",
+    "./error.{js,ts,vue}",
+    "./nuxt.config.{js,ts}",
   ],
   prefix: "",
   theme: {
@@ -80,4 +80,4 @@ module.exports = {
     },
   },
   plugins: [animate],
-}
+};

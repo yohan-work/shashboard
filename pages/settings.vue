@@ -1,6 +1,6 @@
 <template>
   <NuxtLayout name="dashboard">
-    <div class="space-y-6">
+    <div class="space-y-6 p-8 bg-background min-h-screen">
       <!-- Page Header -->
       <div>
         <h2 class="text-3xl font-bold tracking-tight">설정</h2>
