@@ -1,15 +1,8 @@
 <template>
-  <div :class="cn('flex flex-col space-y-1.5 p-6', $attrs.class)">
+  <div class="flex flex-col space-y-1.5 p-6">
     <slot />
   </div>
 </template>
 
 <script setup lang="ts">
-import { cn } from '~/lib/utils'
-
-interface Props {
-  class?: string
-}
-
-defineProps<Props>()
 </script>
